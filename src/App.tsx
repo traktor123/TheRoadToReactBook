@@ -1,8 +1,27 @@
 import * as React from 'react';
 
+type Story = {
+  title: string,
+  url: string,
+  author: string,
+  num_comments: number,
+  points: number,
+  objectID: number
+}
+
+type Stories = Story[];
+
+type ListProps = {
+  list: Stories;
+};
+
+type ItemProps = {
+  item: Story;
+}
+
 const App = () => {
 
-  const stories = [
+  const stories: Story[] = [
     {
       title: 'React',
       url: 'https://reactjs.org/',
@@ -34,7 +53,7 @@ const App = () => {
 
 const Search = () => {
 
-  const handleChange = (event: any) => {
+  const handleChange:React.EventHandler<React.ChangeEvent> = (event: React.ChangeEvent<HTMLInputElement>) => {
     // synthetic event
     console.log(event);
     // value of target (here: input HTML element)
@@ -49,17 +68,17 @@ const Search = () => {
   )
 }
 
-const List = (props: any) => (
+const List: React.FC<ListProps> = (props) => (
   <ul>
     {
-      props.list.map((item: any) => (
+      props.list.map((item: Story) => (
       <Item key={item.objectID} item={item}/>
       ))
     }
   </ul>
 );
 
-const Item = (props: any) => 
+const Item: React.FC<ItemProps> = (props) => 
   (
     <li key={props.item.objectID}>
       <span>
