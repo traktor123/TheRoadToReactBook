@@ -26,6 +26,8 @@ function App() {
       <Search/>
       <hr />
       <List />
+      <hr />
+      <List />
     </div>
   );
 }
