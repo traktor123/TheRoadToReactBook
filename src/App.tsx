@@ -19,6 +19,10 @@ type ItemProps = {
   item: Story;
 }
 
+type SearchProps = {
+  onSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
 const App = () => {
 
   const stories: Story[] = [
@@ -40,10 +44,17 @@ const App = () => {
     },
   ];
 
+  // A
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // D
+    console.log("Log from App Component" + event.target.value);
+  };
+
   return (
   <div>
     <h1>My Hacker Stories</h1>
-    <Search />
+    {/* // B */}
+    <Search onSearch={handleSearch} />
     <hr />
     <List  list={stories}/>
     <hr />
@@ -51,11 +62,14 @@ const App = () => {
   </div>
 )};
 
-const Search = () => {
+const Search:React.FC<SearchProps> = (props) => {
   const [searchTerm, setSearchTerm]:[string, React.Dispatch<React.SetStateAction<string>>] = React.useState('');
   
   const handleChange:React.EventHandler<React.ChangeEvent> = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+
+    // C
+    props.onSearch(event);
 
     // synthetic event
     console.log(event);
@@ -74,7 +88,7 @@ const Search = () => {
   )
 }
 
-const List: React.FC<ListProps> = (props) => (
+const List:React.FC<ListProps> = (props) => (
   <ul>
     {
       props.list.map((item: Story) => (
