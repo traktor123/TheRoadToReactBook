@@ -20,7 +20,8 @@ type ItemProps = {
 }
 
 type SearchProps = {
-  onSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;  
+  searchTerm: string;
 };
 
 const App = () => {
@@ -42,33 +43,46 @@ const App = () => {
       points: 5,
       objectID: 1,
     },
+    {
+      title: 'NgRx',
+      url: 'https://redux.js.org/',
+      author: 'Dan Abramov, Andrew Clark',
+      num_comments: 2,
+      points: 5,
+      objectID: 2,
+    },
+    {
+      title: 'C#',
+      url: 'https://redux.js.org/',
+      author: 'Dan Abramov, Andrew Clark',
+      num_comments: 2,
+      points: 5,
+      objectID: 3,
+    },    
   ];
+ 
+  const [searchTerm, setSearchTerm]:[string, React.Dispatch<React.SetStateAction<string>>] = React.useState('');  
 
-  // A
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // D
+  let filteredStories = searchTerm == ''
+  ? stories
+  : stories.filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase())); 
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {    
+    setSearchTerm(event.target.value);
     console.log("Log from App Component" + event.target.value);
   };
 
   return (
   <div>
     <h1>My Hacker Stories</h1>
-    {/* // B */}
-    <Search onSearch={handleSearch} />
+    <Search onSearch={handleSearch} searchTerm={searchTerm}/>
     <hr />
-    <List  list={stories}/>
-    <hr />
-    <List  list={stories}/>
+    <List  list={filteredStories}/>
   </div>
 )};
 
 const Search:React.FC<SearchProps> = (props) => {
-  const [searchTerm, setSearchTerm]:[string, React.Dispatch<React.SetStateAction<string>>] = React.useState('');
-  
   const handleChange:React.EventHandler<React.ChangeEvent> = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-
-    // C
     props.onSearch(event);
 
     // synthetic event
@@ -82,7 +96,7 @@ const Search:React.FC<SearchProps> = (props) => {
       <label htmlFor="search">Search: </label>
       <input id="search" type="text" onChange={handleChange}/>
       <p>
-        Searching for <strong>{searchTerm}</strong>.
+        Searching for <strong>{props.searchTerm}</strong>
       </p>      
     </div>
   )
