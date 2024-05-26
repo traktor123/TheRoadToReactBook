@@ -29,51 +29,64 @@ type SearchProps = {
   searchTerm: string;
 };
 
-const App = () => {
+const stories: Story[] = [
+  {
+    title: 'React',
+    url: 'https://reactjs.org/',
+    author: 'Jordan Walke',
+    num_comments: 3,
+    points: 4,
+    objectID: 0,
+  },
+  {
+    title: 'Redux',
+    url: 'https://redux.js.org/',
+    author: 'Dan Abramov, Andrew Clark',
+    num_comments: 2,
+    points: 5,
+    objectID: 1,
+  },
+  {
+    title: 'NgRx',
+    url: 'https://redux.js.org/',
+    author: 'Dan Abramov, Andrew Clark',
+    num_comments: 2,
+    points: 5,
+    objectID: 2,
+  },
+  {
+    title: 'C#',
+    url: 'https://redux.js.org/',
+    author: 'Dan Abramov, Andrew Clark',
+    num_comments: 2,
+    points: 5,
+    objectID: 3,
+  },    
+];
 
-  const stories: Story[] = [
-    {
-      title: 'React',
-      url: 'https://reactjs.org/',
-      author: 'Jordan Walke',
-      num_comments: 3,
-      points: 4,
-      objectID: 0,
-    },
-    {
-      title: 'Redux',
-      url: 'https://redux.js.org/',
-      author: 'Dan Abramov, Andrew Clark',
-      num_comments: 2,
-      points: 5,
-      objectID: 1,
-    },
-    {
-      title: 'NgRx',
-      url: 'https://redux.js.org/',
-      author: 'Dan Abramov, Andrew Clark',
-      num_comments: 2,
-      points: 5,
-      objectID: 2,
-    },
-    {
-      title: 'C#',
-      url: 'https://redux.js.org/',
-      author: 'Dan Abramov, Andrew Clark',
-      num_comments: 2,
-      points: 5,
-      objectID: 3,
-    },    
-  ];
- 
-  const [searchTerm, setSearchTerm]:[string, React.Dispatch<React.SetStateAction<string>>] = React.useState('React');  
+let someSimpleVar: number = 0;
+
+const App = () => {  
+  let searchTermStored: string = localStorage.getItem('searchTerm') || 'React';
+
+  const [searchTerm, setSearchTerm]:[string, React.Dispatch<React.SetStateAction<string>>] = React.useState(searchTermStored);  
 
   let filteredStories = searchTerm == ''
   ? stories
-  : stories.filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase())); 
+  : stories.filter(s => s.title.toLowerCase().includes(searchTerm?.toLowerCase() ?? "")); 
+
+  React.useEffect(() => {
+    console.log("somesimpleVar = " + someSimpleVar);
+    }, [someSimpleVar]);
+
+  React.useEffect(() => {
+    localStorage.setItem('searchTerm', searchTerm);
+    someSimpleVar++;
+    }, [searchTerm]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {    
     setSearchTerm(event.target.value);
+
     console.log("Log from App Component" + event.target.value);
   };
 
