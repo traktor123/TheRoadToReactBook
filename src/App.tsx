@@ -61,7 +61,7 @@ const App = () => {
     },    
   ];
  
-  const [searchTerm, setSearchTerm]:[string, React.Dispatch<React.SetStateAction<string>>] = React.useState('');  
+  const [searchTerm, setSearchTerm]:[string, React.Dispatch<React.SetStateAction<string>>] = React.useState('React');  
 
   let filteredStories = searchTerm == ''
   ? stories
@@ -81,9 +81,9 @@ const App = () => {
   </div>
 )};
 
-const Search:React.FC<SearchProps> = (props) => {
+const Search:React.FC<SearchProps> = ({ searchTerm, onSearch }) => {  
   const handleChange:React.EventHandler<React.ChangeEvent> = (event: React.ChangeEvent<HTMLInputElement>) => {
-    props.onSearch(event);
+    onSearch(event);
 
     // synthetic event
     console.log(event);
@@ -94,33 +94,33 @@ const Search:React.FC<SearchProps> = (props) => {
   return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange}/>
+      <input id="search" type="text" onChange={handleChange} value={searchTerm}/>
       <p>
-        Searching for <strong>{props.searchTerm}</strong>
+        Searching for <strong>{searchTerm}</strong>
       </p>      
     </div>
   )
 }
 
-const List:React.FC<ListProps> = (props) => (
+const List:React.FC<ListProps> = ({list}) => (
   <ul>
     {
-      props.list.map((item: Story) => (
+      list.map((item: Story) => (
       <Item key={item.objectID} item={item}/>
       ))
     }
   </ul>
 );
 
-const Item: React.FC<ItemProps> = (props) => 
+const Item: React.FC<ItemProps> = ({item}) => 
   (
-    <li key={props.item.objectID}>
+    <li key={item.objectID}>
       <span>
-        <a href={props.item.url}>{props.item.title}</a>
+        <a href={item.url}>{item.title}</a>
       </span>
-      <span>{props.item.author}</span>
-      <span>{props.item.num_comments}</span>
-      <span>{props.item.points}</span>
+      <span>{item.author}</span>
+      <span>{item.num_comments}</span>
+      <span>{item.points}</span>
     </li>
   )
 
