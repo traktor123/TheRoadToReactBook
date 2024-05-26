@@ -21,7 +21,7 @@ type ItemProps = {
   author: string,
   num_comments: number,
   points: number,
-  objectID: number
+  //objectID: number
 }
 
 type SearchProps = {
@@ -110,22 +110,16 @@ const Search:React.FC<SearchProps> = ({ searchTerm, onSearch }) => {
 const List:React.FC<ListProps> = ({list}) => (
   <ul>
     {
-      list.map((item: Story) => (
-      <Item key={item.objectID}   
-            objectID={item.objectID}   
-            title={item.title}
-            url={item.url}
-            author={item.author}
-            num_comments={item.num_comments}
-            points={item.points}/>
-          ))
+      list.map(({ objectID, ...item }) => (
+      <Item key={objectID} {...item} />
+     ))
     }
   </ul>
 );
 
-const Item: React.FC<ItemProps> = ({ title, objectID, url, author, num_comments, points }) => 
+const Item: React.FC<ItemProps> = ({ title, url, author, num_comments, points }) => 
   (
-    <li key={objectID}>
+    <li>
       <span>
         <a href={url}>{title}</a>
       </span>
