@@ -16,7 +16,12 @@ type ListProps = {
 };
 
 type ItemProps = {
-  item: Story
+  title: string,
+  url: string,
+  author: string,
+  num_comments: number,
+  points: number,
+  objectID: number
 }
 
 type SearchProps = {
@@ -106,22 +111,19 @@ const List:React.FC<ListProps> = ({list}) => (
   <ul>
     {
       list.map((item: Story) => (
-      <Item key={item.objectID} item={item}/>
-      ))
+      <Item key={item.objectID}   
+            objectID={item.objectID}   
+            title={item.title}
+            url={item.url}
+            author={item.author}
+            num_comments={item.num_comments}
+            points={item.points}/>
+          ))
     }
   </ul>
 );
 
-const Item: React.FC<ItemProps> = (
-  { item:
-    { title,
-      objectID,
-      url,
-      author,
-      num_comments,
-      points
-    }
-  }) => 
+const Item: React.FC<ItemProps> = ({ title, objectID, url, author, num_comments, points }) => 
   (
     <li key={objectID}>
       <span>
