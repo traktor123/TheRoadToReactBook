@@ -21,7 +21,7 @@ type ItemProps = {
   author: string,
   num_comments: number,
   points: number,
-  //objectID: number
+  objectID: number
 }
 
 type SearchProps = {
@@ -110,8 +110,8 @@ const Search:React.FC<SearchProps> = ({ searchTerm, onSearch }) => {
 const List:React.FC<ListProps> = ({list}) => (
   <ul>
     {
-      list.map(({ objectID, ...item }) => (
-      <Item key={objectID} {...item} />
+      list.map((item) => (
+      <Item key={item.objectID} {...item} />
      ))
     }
   </ul>
