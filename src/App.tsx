@@ -25,8 +25,11 @@ type ItemProps = {
 }
 
 type SearchProps = {
-  onSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  searchTerm: string;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string;
+  id: string;
+  label: string;
+  type?: string;
 };
 
 const stories: Story[] = [
@@ -91,29 +94,25 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <Search onSearch={handleSearch} searchTerm={searchTerm} />
+      <InputWithLabel onInputChange={handleSearch} value={searchTerm} id="search" label="Search"/>      
       <hr />
       <List list={filteredStories} />
     </div>
   )
 };
 
-const Search: React.FC<SearchProps> = ({ searchTerm, onSearch }) => {
+const InputWithLabel: React.FC<SearchProps> = ({ value, onInputChange, id, label, type = 'text' }) => {
   const handleChange: React.EventHandler<React.ChangeEvent> = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onSearch(event);
-
-    // synthetic event
-    console.log(event);
-    // value of target (here: input HTML element)
-    console.log(event.target.value);
+    onInputChange(event);
   };
 
   return <>
       <div key="1">
-        <label htmlFor="search">Search: </label>
-        <input id="search" type="text" onChange={handleChange} value={searchTerm} />
+        <label htmlFor={id}>{label}</label>
+        &nbsp;
+        <input id={id} type={type} onChange={handleChange} value={value} />
         <p>
-          Searching for <strong>{searchTerm}</strong>
+          Searching for <strong>{value}</strong>
         </p>
       </div>
       <div>
