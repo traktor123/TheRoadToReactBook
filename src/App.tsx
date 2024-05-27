@@ -115,7 +115,7 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearch }) => {
         <p>
           Searching for <strong>{searchTerm}</strong>
         </p>
-      </div>,
+      </div>
       <div>
         Search Footer
       </div>
