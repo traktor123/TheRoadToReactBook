@@ -64,7 +64,7 @@ const stories: Story[] = [
   },
 ];
 
-const useStorageState = (key:string, initialState: string): [string, React.Dispatch<React.SetStateAction<string>>] => {
+const useStorageState = (key: string, initialState: string): [string, React.Dispatch<React.SetStateAction<string>>] => {
   const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
 
   React.useEffect(() => {
@@ -108,18 +108,18 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearch }) => {
     console.log(event.target.value);
   };
 
-  return [
-    <div key="1">
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange} value={searchTerm} />
-      <p>
-        Searching for <strong>{searchTerm}</strong>
-      </p>
-    </div>,
-    <div key="2">
-      Search Footer      
-    </div>
-  ]
+  return <>
+      <div key="1">
+        <label htmlFor="search">Search: </label>
+        <input id="search" type="text" onChange={handleChange} value={searchTerm} />
+        <p>
+          Searching for <strong>{searchTerm}</strong>
+        </p>
+      </div>,
+      <div>
+        Search Footer
+      </div>
+    </>
 }
 
 const List: React.FC<ListProps> = ({ list }) => (
