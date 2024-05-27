@@ -30,6 +30,7 @@ type InputWithLabelProps = {
   id: string;  
   type?: string;
   children?: React.ReactNode;
+  isFocused? : boolean;
 };
 
 const stories: Story[] = [
@@ -94,7 +95,7 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel onInputChange={handleSearch} value={searchTerm} id="search">      
+      <InputWithLabel onInputChange={handleSearch} value={searchTerm} id="search" isFocused={true}>      
         <strong>Search:</strong>
       </InputWithLabel>      
       <hr />
@@ -103,12 +104,12 @@ const App = () => {
   )
 };
 
-const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, id, type = 'text', children }) => (
+const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, id, type = 'text', children, isFocused = false }) => (
    <>
       <div key="1">
         <label htmlFor={id}>{children}</label>
         &nbsp;
-        <input id={id} type={type} onChange={onInputChange} value={value} />
+        <input id={id} type={type} onChange={onInputChange} value={value} autoFocus={isFocused}/>
         <p>
           Searching for <strong>{value}</strong>
         </p>
