@@ -27,10 +27,10 @@ type ItemProps = {
 type InputWithLabelProps = {
   onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   value: string;
-  id: string;  
+  id: string;
   type?: string;
   children?: React.ReactNode;
-  isFocused? : boolean;
+  isFocused?: boolean;  
 };
 
 const stories: Story[] = [
@@ -95,29 +95,46 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel onInputChange={handleSearch} value={searchTerm} id="search" isFocused={true}>      
+      <InputWithLabel onInputChange={handleSearch} value={searchTerm} id="search" isFocused={true}>
         <strong>Search:</strong>
-      </InputWithLabel>      
+      </InputWithLabel>
       <hr />
       <List list={filteredStories} />
     </div>
   )
 };
 
-const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, id, type = 'text', children, isFocused = false }) => (
-   <>
-      <div key="1">
-        <label htmlFor={id}>{children}</label>
-        &nbsp;
-        <input id={id} type={type} onChange={onInputChange} value={value} autoFocus={isFocused}/>
-        <p>
-          Searching for <strong>{value}</strong>
-        </p>
-      </div>
-      <div>
-        Search Footer
-      </div>
-    </>)
+const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, id, type = 'text', children, isFocused = false }) => {
+  // A
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  // C
+  React.useEffect(() => {
+    if (isFocused && inputRef.current) {
+      // D
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
+  return <>
+    <div key="1">
+      <label htmlFor={id}>{children}</label>
+      &nbsp;
+      {/* B */}
+      <input
+        id={id}
+        type={type}
+        onChange={onInputChange}
+        value={value}
+        ref={inputRef}/>
+      <p>
+        Searching for <strong>{value}</strong>
+      </p>
+    </div>
+    <div>
+      Search Footer
+    </div>
+  </>
+}
 
 
 const List: React.FC<ListProps> = ({ list }) => (
