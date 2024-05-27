@@ -108,15 +108,18 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearch }) => {
     console.log(event.target.value);
   };
 
-  return (
-    <div>
+  return [
+    <div key="1">
       <label htmlFor="search">Search: </label>
       <input id="search" type="text" onChange={handleChange} value={searchTerm} />
       <p>
         Searching for <strong>{searchTerm}</strong>
       </p>
+    </div>,
+    <div key="2">
+      Search Footer      
     </div>
-  )
+  ]
 }
 
 const List: React.FC<ListProps> = ({ list }) => (
