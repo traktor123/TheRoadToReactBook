@@ -24,12 +24,12 @@ type ItemProps = {
   objectID: number
 }
 
-type SearchProps = {
+type InputWithLabelProps = {
   onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   value: string;
-  id: string;
-  label: string;
+  id: string;  
   type?: string;
+  children?: React.ReactNode;
 };
 
 const stories: Story[] = [
@@ -94,23 +94,21 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel onInputChange={handleSearch} value={searchTerm} id="search" label="Search"/>      
+      <InputWithLabel onInputChange={handleSearch} value={searchTerm} id="search">      
+        <strong>Search:</strong>
+      </InputWithLabel>      
       <hr />
       <List list={filteredStories} />
     </div>
   )
 };
 
-const InputWithLabel: React.FC<SearchProps> = ({ value, onInputChange, id, label, type = 'text' }) => {
-  const handleChange: React.EventHandler<React.ChangeEvent> = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onInputChange(event);
-  };
-
-  return <>
+const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, id, type = 'text', children }) => (
+   <>
       <div key="1">
-        <label htmlFor={id}>{label}</label>
+        <label htmlFor={id}>{children}</label>
         &nbsp;
-        <input id={id} type={type} onChange={handleChange} value={value} />
+        <input id={id} type={type} onChange={onInputChange} value={value} />
         <p>
           Searching for <strong>{value}</strong>
         </p>
@@ -118,8 +116,8 @@ const InputWithLabel: React.FC<SearchProps> = ({ value, onInputChange, id, label
       <div>
         Search Footer
       </div>
-    </>
-}
+    </>)
+
 
 const List: React.FC<ListProps> = ({ list }) => (
   <ul>
