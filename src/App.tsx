@@ -17,12 +17,15 @@ type ListProps = {
 };
 
 type ItemProps = {
+  /*
   title: string,
   url: string,
   author: string,
   num_comments: number,
   points: number,
   objectID: number,
+  */
+  item: Story;
   onRemoveItem: (item: Story) => void;
 }
 
@@ -69,6 +72,8 @@ const stories: Story[] = [
     objectID: 3,
   },
 ];
+
+const getAsyncStories = () => Promise.resolve({ data: { stories: stories } });
 
 const useStorageState = (key: string, initialState: string): [string, React.Dispatch<React.SetStateAction<string>>] => {
   const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
@@ -151,7 +156,7 @@ const List: React.FC<ListProps> = ({ list, onRemoveItem }) => {
     {
       list.map((item) => (
         <div key={item.objectID}>
-          <Item {...item} onRemoveItem={onRemoveItem} />
+          <Item item={item} onRemoveItem={onRemoveItem} />
         </div>
       ))
     }
@@ -159,26 +164,22 @@ const List: React.FC<ListProps> = ({ list, onRemoveItem }) => {
 };
 
 const Item: React.FC<ItemProps> = ({
-  objectID,
-  title,
-  url,
-  author,
-  num_comments,
-  points,
+  item,
   onRemoveItem }) =>
 (
   <li>
     <span>
-      <a href={url}>{title}</a>
+      <a href={item.url}>{item.title}</a>
     </span>
     &nbsp;
-    <span>{author}</span>
+    <span>{item.author}</span>
     &nbsp;
-    <span>{num_comments}</span>
+    <span>{item.num_comments}</span>
     &nbsp;
-    <span>{points}</span>
+    <span>{item.points}</span>
     &nbsp;
-    <button onClick={() => onRemoveItem({ objectID: objectID } as Story)}>Remove</button>
+    <button type="button" onClick={ () => onRemoveItem(item) }>Remove</button>
+    <button type="button" onClick={ onRemoveItem.bind(null, item) }></button>
   </li>
 )
 
