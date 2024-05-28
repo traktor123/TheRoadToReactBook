@@ -13,6 +13,7 @@ type Stories = Story[];
 
 type ListProps = {
   list: Stories;
+  onRemoveItem: (item: Story) => void;
 };
 
 type ItemProps = {
@@ -21,7 +22,8 @@ type ItemProps = {
   author: string,
   num_comments: number,
   points: number,
-  objectID: number
+  objectID: number,
+  onRemoveItem: (item: Story) => void;
 }
 
 type InputWithLabelProps = {
@@ -30,7 +32,7 @@ type InputWithLabelProps = {
   id: string;
   type?: string;
   children?: React.ReactNode;
-  isFocused?: boolean;  
+  isFocused?: boolean;
 };
 
 const stories: Story[] = [
@@ -79,12 +81,19 @@ const useStorageState = (key: string, initialState: string): [string, React.Disp
 };
 
 const App = () => {
-
+  
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
 
-  let filteredStories = searchTerm == ''
-    ? stories
-    : stories.filter(s => s.title.toLowerCase().includes(searchTerm?.toLowerCase() ?? ""));
+  let [filteredStories, setfilteredStories] = React.useState(stories);
+
+  const handleRemoveStory = (item: Story) => {
+    const newStories = filteredStories.filter((story) => item.objectID !== story.objectID);
+    setfilteredStories(newStories);
+  };
+
+  let filteredStories1 = searchTerm == ''
+    ? filteredStories
+    : filteredStories.filter(s => s.title.toLowerCase().includes(searchTerm?.toLowerCase() ?? ""));
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -99,7 +108,7 @@ const App = () => {
         <strong>Search:</strong>
       </InputWithLabel>
       <hr />
-      <List list={filteredStories} />
+      <List list={filteredStories1} onRemoveItem={handleRemoveStory} />
     </div>
   )
 };
@@ -125,7 +134,7 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, i
         type={type}
         onChange={onInputChange}
         value={value}
-        ref={inputRef}/>
+        ref={inputRef} />
       <p>
         Searching for <strong>{value}</strong>
       </p>
@@ -136,26 +145,40 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, i
   </>
 }
 
+const List: React.FC<ListProps> = ({ list, onRemoveItem }) => {
 
-const List: React.FC<ListProps> = ({ list }) => (
-  <ul>
+  return <ul>
     {
       list.map((item) => (
-        <Item key={item.objectID} {...item} />
+        <div key={item.objectID}>
+          <Item {...item} onRemoveItem={onRemoveItem} />
+        </div>
       ))
     }
   </ul>
-);
+};
 
-const Item: React.FC<ItemProps> = ({ title, url, author, num_comments, points }) =>
+const Item: React.FC<ItemProps> = ({
+  objectID,
+  title,
+  url,
+  author,
+  num_comments,
+  points,
+  onRemoveItem }) =>
 (
   <li>
     <span>
       <a href={url}>{title}</a>
     </span>
+    &nbsp;
     <span>{author}</span>
+    &nbsp;
     <span>{num_comments}</span>
+    &nbsp;
     <span>{points}</span>
+    &nbsp;
+    <button onClick={() => onRemoveItem({ objectID: objectID } as Story)}>Remove</button>
   </li>
 )
 
