@@ -73,7 +73,13 @@ const stories: Story[] = [
   },
 ];
 
-const getAsyncStories = () => Promise.resolve({ data: { stories: stories } });
+const getAsyncStories = () => new Promise<{ data: { stories: Story[] } }>((resolve) =>
+  {
+    setTimeout(() => {
+      resolve({ data: { stories: stories } })
+    }, 2000);    
+  }
+);
 
 const useStorageState = (key: string, initialState: string): [string, React.Dispatch<React.SetStateAction<string>>] => {
   const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
@@ -86,10 +92,16 @@ const useStorageState = (key: string, initialState: string): [string, React.Disp
 };
 
 const App = () => {
-  
+
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
 
-  let [filteredStories, setfilteredStories] = React.useState(stories);
+  let [filteredStories, setfilteredStories] = React.useState<Story[]>([]);
+
+  React.useEffect(() => {
+    getAsyncStories().then(result => {
+      setfilteredStories(result.data.stories);
+    });
+  }, []);
 
   const handleRemoveStory = (item: Story) => {
     const newStories = filteredStories.filter((story) => item.objectID !== story.objectID);
@@ -178,8 +190,8 @@ const Item: React.FC<ItemProps> = ({
     &nbsp;
     <span>{item.points}</span>
     &nbsp;
-    <button type="button" onClick={ () => onRemoveItem(item) }>Remove</button>
-    <button type="button" onClick={ onRemoveItem.bind(null, item) }></button>
+    <button type="button" onClick={() => onRemoveItem(item)}>Remove</button>
+    <button type="button" onClick={onRemoveItem.bind(null, item)}>Remove</button>
   </li>
 )
 
