@@ -73,15 +73,18 @@ const stories: Story[] = [
   },
 ];
 
-const getAsyncStories = () => new Promise<{ data: { stories: Story[] } }>((resolve) =>
-  {
-    setTimeout(() => {
-      resolve({ data: { stories: stories } })
-    }, 2000);    
-  }
+const getAsyncStories = () => new Promise<{ data: { stories: Story[] } }>((resolve, reject) => {
+  setTimeout(() => {
+    //throw "Error while loading Stories from remote Repository."; //will not work because within timeout!
+    //reject("Error while loading Stories from remote Repository.");
+    resolve({ data: { stories: stories } })
+  }, 5000);
+}
 );
 
-const useStorageState = (key: string, initialState: string): [string, React.Dispatch<React.SetStateAction<string>>] => {
+const useStorageState = (key: string, initialState: string): [string, (initialState: string) => void] =>
+//[string, React.Dispatch<React.SetStateAction<string>>]   
+{
   const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
 
   React.useEffect(() => {
@@ -94,13 +97,21 @@ const useStorageState = (key: string, initialState: string): [string, React.Disp
 const App = () => {
 
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
-
   let [filteredStories, setfilteredStories] = React.useState<Story[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isError, setIsError] = React.useState(false);
 
   React.useEffect(() => {
-    getAsyncStories().then(result => {
-      setfilteredStories(result.data.stories);
-    });
+    //setIsLoading(true);
+    getAsyncStories()
+      .then(result => {
+        setfilteredStories(result.data.stories);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        setIsError(true);
+        console.log("Error: " + error);
+      });
   }, []);
 
   const handleRemoveStory = (item: Story) => {
@@ -125,9 +136,14 @@ const App = () => {
         <strong>Search:</strong>
       </InputWithLabel>
       <hr />
-      <List list={filteredStories1} onRemoveItem={handleRemoveStory} />
+      {isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
+      {
+        isLoading
+          ? (<strong><h1>Loading...</h1></strong>)
+          : (<List list={filteredStories1} onRemoveItem={handleRemoveStory} />)
+      }
     </div>
-  )
+  );
 };
 
 const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, id, type = 'text', children, isFocused = false }) => {
