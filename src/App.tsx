@@ -94,18 +94,52 @@ const useStorageState = (key: string, initialState: string): [string, (initialSt
   return [value, setValue];
 };
 
+type StoriesState = Stories;
+
+type StoriesSetAction = {
+  type: 'SET_STORIES';
+  payload: Stories;
+};
+
+type StoriesRemoveAction = {
+  type: 'REMOVE_STORY';
+  payload: Story;
+};
+
+type StoriesAction = StoriesSetAction | StoriesRemoveAction;
+
+const storiesReducer = (
+  state: StoriesState,
+  action: StoriesAction
+) => {
+  switch (action.type) {
+    case 'SET_STORIES':
+      return action.payload;
+    case 'REMOVE_STORY':
+      return state.filter((story: Story) => action.payload.objectID !== story.objectID);
+    default:
+      throw new Error();
+  }
+};
+
 const App = () => {
 
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
-  let [filteredStories, setfilteredStories] = React.useState<Story[]>([]);
+  //let [filteredStories, setfilteredStories] = React.useState<Story[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isError, setIsError] = React.useState(false);
+
+  const [filteredStories, dispatchFilteredStories] = React.useReducer(storiesReducer, []);
 
   React.useEffect(() => {
     //setIsLoading(true);
     getAsyncStories()
       .then(result => {
-        setfilteredStories(result.data.stories);
+        //setfilteredStories(result.data.stories);
+        dispatchFilteredStories({
+          type: 'SET_STORIES',
+          payload: result.data.stories,
+        });
         setIsLoading(false);
       })
       .catch(error => {
@@ -115,8 +149,18 @@ const App = () => {
   }, []);
 
   const handleRemoveStory = (item: Story) => {
+    dispatchFilteredStories({
+      type: 'REMOVE_STORY',
+      payload: item,
+    });
+    /*
     const newStories = filteredStories.filter((story) => item.objectID !== story.objectID);
-    setfilteredStories(newStories);
+    //setfilteredStories(newStories);
+    dispatchFilteredStories({
+      type: 'SET_STORIES',
+      payload: newStories,
+    });
+    */
   };
 
   let filteredStories1 = searchTerm == ''
