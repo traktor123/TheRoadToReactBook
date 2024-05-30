@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+/*Data Types*/
+
 type Story = {
   title: string,
   url: string,
@@ -9,10 +11,10 @@ type Story = {
   objectID: number
 }
 
-type Stories = Story[];
+/*Component Types*/
 
 type ListProps = {
-  list: Stories;
+  list: Story[];
   onRemoveItem: (item: Story) => void;
 };
 
@@ -38,7 +40,71 @@ type InputWithLabelProps = {
   isFocused?: boolean;
 };
 
-const stories: Story[] = [
+/*Reducers*/
+type StoriesState = {
+  data: Story[],
+  isLoading: boolean;
+  isError: boolean;
+}
+
+type StoriesFetchInit = {
+  type: 'STORIES_FETCH_INIT';
+}
+
+type StoriesFetchSuccessAction = {
+  type: 'STORIES_FETCH_SUCCESS';
+  payload: Story[];
+};
+
+type StoriesFetchFailureAction = {
+  type: 'STORIES_FETCH_FAILURE';
+};
+
+type StoriesRemoveAction = {
+  type: 'REMOVE_STORY';
+  payload: Story;
+};
+
+type StoriesAction = StoriesFetchInit | StoriesFetchSuccessAction | StoriesFetchFailureAction | StoriesRemoveAction;
+
+const storiesReducer = (
+  state: StoriesState,
+  action: StoriesAction
+) => {
+  switch (action.type) {
+    case 'STORIES_FETCH_INIT':
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case 'STORIES_FETCH_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload,
+      };
+    case 'STORIES_FETCH_FAILURE':
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+      };
+    case 'REMOVE_STORY':
+      return {
+        ...state,
+        data: state.data.filter(
+          (story) => action.payload.objectID !== story.objectID
+        ),
+      };
+    default:
+      throw new Error();
+  }
+};
+
+// Data
+const initialStoriesList: Story[] = [
   {
     title: 'React',
     url: 'https://reactjs.org/',
@@ -73,12 +139,14 @@ const stories: Story[] = [
   },
 ];
 
+/* functions */
+
 const getAsyncStories = () => new Promise<{ data: { stories: Story[] } }>((resolve, reject) => {
   setTimeout(() => {
     //throw "Error while loading Stories from remote Repository."; //will not work because within timeout!
-    //reject("Error while loading Stories from remote Repository.");
-    resolve({ data: { stories: stories } })
-  }, 5000);
+    // reject("Error while loading Stories from remote Repository.");
+    resolve({ data: { stories: initialStoriesList } })    
+  }, 3000);
 }
 );
 
@@ -94,78 +162,36 @@ const useStorageState = (key: string, initialState: string): [string, (initialSt
   return [value, setValue];
 };
 
-type StoriesState = Stories;
-
-type StoriesSetAction = {
-  type: 'SET_STORIES';
-  payload: Stories;
-};
-
-type StoriesRemoveAction = {
-  type: 'REMOVE_STORY';
-  payload: Story;
-};
-
-type StoriesAction = StoriesSetAction | StoriesRemoveAction;
-
-const storiesReducer = (
-  state: StoriesState,
-  action: StoriesAction
-) => {
-  switch (action.type) {
-    case 'SET_STORIES':
-      return action.payload;
-    case 'REMOVE_STORY':
-      return state.filter((story: Story) => action.payload.objectID !== story.objectID);
-    default:
-      throw new Error();
-  }
-};
+/* Components */
 
 const App = () => {
-
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
-  //let [filteredStories, setfilteredStories] = React.useState<Story[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [isError, setIsError] = React.useState(false);
-
-  const [filteredStories, dispatchFilteredStories] = React.useReducer(storiesReducer, []);
+  const [stories, dispatchStories] = React.useReducer(storiesReducer, { data:[], isLoading: false, isError: false });
 
   React.useEffect(() => {
-    //setIsLoading(true);
+    dispatchStories({ type: 'STORIES_FETCH_INIT' });
     getAsyncStories()
       .then(result => {
-        //setfilteredStories(result.data.stories);
-        dispatchFilteredStories({
-          type: 'SET_STORIES',
+        dispatchStories({
+          type: 'STORIES_FETCH_SUCCESS',
           payload: result.data.stories,
         });
-        setIsLoading(false);
       })
       .catch(error => {
-        setIsError(true);
-        console.log("Error: " + error);
+        dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
       });
   }, []);
 
   const handleRemoveStory = (item: Story) => {
-    dispatchFilteredStories({
+    dispatchStories({
       type: 'REMOVE_STORY',
       payload: item,
     });
-    /*
-    const newStories = filteredStories.filter((story) => item.objectID !== story.objectID);
-    //setfilteredStories(newStories);
-    dispatchFilteredStories({
-      type: 'SET_STORIES',
-      payload: newStories,
-    });
-    */
   };
 
-  let filteredStories1 = searchTerm == ''
-    ? filteredStories
-    : filteredStories.filter(s => s.title.toLowerCase().includes(searchTerm?.toLowerCase() ?? ""));
+  let searchedStories = searchTerm === ''
+    ? stories.data
+    : stories.data.filter(s => s.title.toLowerCase().includes(searchTerm?.toLowerCase() ?? ""));
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -180,11 +206,11 @@ const App = () => {
         <strong>Search:</strong>
       </InputWithLabel>
       <hr />
-      {isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
+      {stories.isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
       {
-        isLoading
+        stories.isLoading
           ? (<strong><h1>Loading...</h1></strong>)
-          : (<List list={filteredStories1} onRemoveItem={handleRemoveStory} />)
+          : (<List list={searchedStories} onRemoveItem={handleRemoveStory} />)
       }
     </div>
   );
