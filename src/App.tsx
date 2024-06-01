@@ -32,8 +32,9 @@ type ItemProps = {
 }
 
 type InputWithLabelProps = {
-  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  value: string;
+  onInputChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  value?: string;
   id: string;
   type?: string;
   children?: React.ReactNode;
@@ -108,8 +109,10 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 /* functions */
 
-const getAsyncStories = (searchTerm: string = '') => {
-  return fetch(`${API_ENDPOINT}${searchTerm}`) // B
+const getAsyncStories = (url: string = '') => {  
+  console.log(url);
+
+  return fetch(url) // B
     .then((response) => response.json())
     .then(data => data.hits/*.map((hit: any) => ({
       title: hit.title,
@@ -147,10 +150,11 @@ const useStorageState = (key: string, initialState: string): [string, (initialSt
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
   const [stories, dispatchStories] = React.useReducer(storiesReducer, { data: [], isLoading: false, isError: false });
+  const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
 
-  React.useEffect(() => {
+  const handleFetchStories = React.useCallback(() => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
-    getAsyncStories(searchTerm)
+    getAsyncStories(url)
       .then(result => {
         dispatchStories({
           type: 'STORIES_FETCH_SUCCESS',
@@ -160,7 +164,10 @@ const App = () => {
       .catch(error => {
         dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
       });
-  }, [searchTerm]);
+  }
+  , [url]);
+
+  React.useEffect(handleFetchStories, [handleFetchStories]);
 
   const handleRemoveStory = (item: Story) => {
     dispatchStories({
@@ -176,16 +183,37 @@ const App = () => {
   */
   let searchedStories = stories.data;
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
+    };  
+
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      console.log("Enter event: " + event.target.value);
+      setSearchTerm(event.target.value);
+    }
   };
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel onInputChange={handleSearch} value={searchTerm} id="search" isFocused={true}>
+      <InputWithLabel
+        onInputChange={handleSearchInput}
+        onKeyUp={handleKeyUp}
+        value={searchTerm}
+        id="search" isFocused={true}>
         <strong>Search:</strong>
       </InputWithLabel>
+      <button
+        type="button"
+        disabled={!searchTerm}
+        onClick={handleSearchSubmit}>
+        Submit
+      </button>      
       <hr />
       {stories.isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
       {
@@ -197,7 +225,7 @@ const App = () => {
   );
 };
 
-const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, id, type = 'text', children, isFocused = false }) => {
+const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, onKeyUp, id, type = 'text', children, isFocused = false }) => {
   // A
   const inputRef = React.useRef<HTMLInputElement>(null);
   // C
@@ -217,6 +245,7 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, i
         id={id}
         type={type}
         onChange={onInputChange}
+        onKeyUp={onKeyUp}
         value={value}
         ref={inputRef} />
       <p>
@@ -257,7 +286,6 @@ const Item: React.FC<ItemProps> = ({
     &nbsp;
     <span>{item.points}</span>
     &nbsp;
-    <button type="button" onClick={() => onRemoveItem(item)}>Remove</button>
     <button type="button" onClick={onRemoveItem.bind(null, item)}>Remove</button>
   </li>
 )
