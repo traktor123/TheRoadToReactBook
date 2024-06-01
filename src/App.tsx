@@ -108,8 +108,8 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 /* functions */
 
-const getAsyncStories = () => {
-  return fetch(`${API_ENDPOINT}react`) // B
+const getAsyncStories = (searchTerm: string = '') => {
+  return fetch(`${API_ENDPOINT}${searchTerm}`) // B
     .then((response) => response.json())
     .then(data => data.hits/*.map((hit: any) => ({
       title: hit.title,
@@ -150,8 +150,7 @@ const App = () => {
 
   React.useEffect(() => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
-    /*getAsyncStories().then(result => console.log(result));*/
-    getAsyncStories()
+    getAsyncStories(searchTerm)
       .then(result => {
         dispatchStories({
           type: 'STORIES_FETCH_SUCCESS',
@@ -161,7 +160,7 @@ const App = () => {
       .catch(error => {
         dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
       });
-  }, []);
+  }, [searchTerm]);
 
   const handleRemoveStory = (item: Story) => {
     dispatchStories({
@@ -170,14 +169,15 @@ const App = () => {
     });
   };
 
+  /*
   let searchedStories = searchTerm === ''
     ? stories.data
     : stories.data.filter(s => s.title.toLowerCase().includes(searchTerm?.toLowerCase() ?? ""));
+  */
+  let searchedStories = stories.data;
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-
-    console.log("Log from App Component" + event.target.value);
   };
 
   return (
