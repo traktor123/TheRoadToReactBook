@@ -104,51 +104,31 @@ const storiesReducer = (
 };
 
 // Data
-const initialStoriesList: Story[] = [
-  {
-    title: 'React',
-    url: 'https://reactjs.org/',
-    author: 'Jordan Walke',
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: 'Redux',
-    url: 'https://redux.js.org/',
-    author: 'Dan Abramov, Andrew Clark',
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-  {
-    title: 'NgRx',
-    url: 'https://redux.js.org/',
-    author: 'Dan Abramov, Andrew Clark',
-    num_comments: 2,
-    points: 5,
-    objectID: 2,
-  },
-  {
-    title: 'C#',
-    url: 'https://redux.js.org/',
-    author: 'Dan Abramov, Andrew Clark',
-    num_comments: 2,
-    points: 5,
-    objectID: 3,
-  },
-];
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 /* functions */
 
-const getAsyncStories = () => new Promise<{ data: { stories: Story[] } }>((resolve, reject) => {
-  setTimeout(() => {
-    //throw "Error while loading Stories from remote Repository."; //will not work because within timeout!
-    // reject("Error while loading Stories from remote Repository.");
-    resolve({ data: { stories: initialStoriesList } })    
-  }, 3000);
+const getAsyncStories = () => {
+  return fetch(`${API_ENDPOINT}react`) // B
+    .then((response) => response.json())
+    .then(data => data.hits/*.map((hit: any) => ({
+      title: hit.title,
+      url: hit.url,
+      author: hit.author,
+      num_comments: hit.num_comments,
+      points: hit.points,
+      objectID: hit.objectID,
+    }))*/) // C
+  /*
+  return new Promise<{ data: { stories: Story[] } }>((resolve, reject) => {
+    setTimeout(() => {
+      //throw "Error while loading Stories from remote Repository."; //will not work because within timeout!
+      // reject("Error while loading Stories from remote Repository.");
+      resolve({ data: { stories: initialStoriesList } })
+    }, 3000);
+  });
+  */
 }
-);
 
 const useStorageState = (key: string, initialState: string): [string, (initialState: string) => void] =>
 //[string, React.Dispatch<React.SetStateAction<string>>]   
@@ -166,15 +146,16 @@ const useStorageState = (key: string, initialState: string): [string, (initialSt
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
-  const [stories, dispatchStories] = React.useReducer(storiesReducer, { data:[], isLoading: false, isError: false });
+  const [stories, dispatchStories] = React.useReducer(storiesReducer, { data: [], isLoading: false, isError: false });
 
   React.useEffect(() => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
+    /*getAsyncStories().then(result => console.log(result));*/
     getAsyncStories()
       .then(result => {
         dispatchStories({
           type: 'STORIES_FETCH_SUCCESS',
-          payload: result.data.stories,
+          payload: result/*.data.stories*/, //D
         });
       })
       .catch(error => {
