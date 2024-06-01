@@ -189,12 +189,11 @@ const App = () => {
 
   const handleSearchSubmit = () => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
-    };  
+  };  
 
   const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      console.log("Enter event: " + event.target.value);
-      setSearchTerm(event.target.value);
+      setUrl(`${API_ENDPOINT}${searchTerm}`);
     }
   };
 
