@@ -34,7 +34,6 @@ type ItemProps = {
 
 type InputWithLabelProps = {
   onInputChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   value?: string;
   id: string;
   type?: string;
@@ -114,7 +113,7 @@ const getAsyncStories = async (url: string = '') => {
   console.log(url);
   let result = await axios.get(url)
   return result.data.hits;
-    
+
   /*
   return fetch(url) // B
     .then((response) => response.json())
@@ -173,7 +172,7 @@ const App = () => {
     }
   }, [url]);
 
-  React.useEffect(() => { handleFetchStories(); } , [handleFetchStories]);
+  React.useEffect(() => { handleFetchStories(); }, [handleFetchStories]);
 
   const handleRemoveStory = (item: Story) => {
     dispatchStories({
@@ -193,32 +192,15 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
-  };
-
-  const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      setUrl(`${API_ENDPOINT}${searchTerm}`);
-    }
+    event.preventDefault();
   };
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel
-        onInputChange={handleSearchInput}
-        onKeyUp={handleKeyUp}
-        value={searchTerm}
-        id="search" isFocused={true}>
-        <strong>Search:</strong>
-      </InputWithLabel>
-      <button
-        type="button"
-        disabled={!searchTerm}
-        onClick={handleSearchSubmit}>
-        Submit
-      </button>
+      <SearchForm onSearchSubmit = {handleSearchSubmit} onSearchInput= {handleSearchInput} searchTerm = {searchTerm}/>
       <hr />
       {stories.isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
       {
@@ -230,7 +212,27 @@ const App = () => {
   );
 };
 
-const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, onKeyUp, id, type = 'text', children, isFocused = false }) => {
+type SearchFormProps = {
+  onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  searchTerm: string;
+}
+
+const SearchForm: React.FC<SearchFormProps> = ({ onSearchSubmit: onSearchSubmit, onSearchInput: onSearchInput, searchTerm}) => {
+
+  return (
+    <form onSubmit={onSearchSubmit}>
+      <InputWithLabel
+        onInputChange={onSearchInput}
+        value={searchTerm}
+        id="search" isFocused={true}>
+        <strong>Search:</strong>
+      </InputWithLabel>
+      <button type="submit" disabled={!searchTerm}>Submit</button>
+    </form>)
+}
+
+const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, id, type = 'text', children, isFocused = false }) => {
   // A
   const inputRef = React.useRef<HTMLInputElement>(null);
   // C
@@ -241,8 +243,8 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, o
     }
   }, [isFocused]);
 
-  return <>
-    <div key="1">
+  return (
+    <div>
       <label htmlFor={id}>{children}</label>
       &nbsp;
       {/* B */}
@@ -250,17 +252,12 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, o
         id={id}
         type={type}
         onChange={onInputChange}
-        onKeyUp={onKeyUp}
         value={value}
         ref={inputRef} />
       <p>
         Searching for <strong>{value}</strong>
       </p>
-    </div>
-    <div>
-      Search Footer
-    </div>
-  </>
+    </div>)
 }
 
 const List: React.FC<ListProps> = ({ list, onRemoveItem }) => {
