@@ -152,7 +152,7 @@ const useStorageState = (key: string, initialState: string): [string, (initialSt
 
 /* Components */
 
-const App = () => {
+export const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
   const [stories, dispatchStories] = React.useReducer(storiesReducer, { data: [], isLoading: false, isError: false });
   const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
@@ -200,7 +200,7 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <SearchForm onSearchSubmit = {handleSearchSubmit} onSearchInput= {handleSearchInput} searchTerm = {searchTerm}/>
+      <SearchForm onSearchSubmit={handleSearchSubmit} onSearchInput={handleSearchInput} searchTerm={searchTerm} />
       <hr />
       {stories.isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
       {
@@ -213,12 +213,12 @@ const App = () => {
 };
 
 type SearchFormProps = {
-  onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onSearchSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;
   onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
   searchTerm: string;
 }
 
-const SearchForm: React.FC<SearchFormProps> = ({ onSearchSubmit: onSearchSubmit, onSearchInput: onSearchInput, searchTerm}) => {
+const SearchForm: React.FC<SearchFormProps> = ({ onSearchSubmit: onSearchSubmit, onSearchInput: onSearchInput, searchTerm }) => {
 
   return (
     <form onSubmit={onSearchSubmit}>
@@ -232,13 +232,11 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchSubmit: onSearchSubmit,
     </form>)
 }
 
+/*
 const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, id, type = 'text', children, isFocused = false }) => {
-  // A
   const inputRef = React.useRef<HTMLInputElement>(null);
-  // C
   React.useEffect(() => {
     if (isFocused && inputRef.current) {
-      // D
       inputRef.current.focus();
     }
   }, [isFocused]);
@@ -247,7 +245,6 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, i
     <div>
       <label htmlFor={id}>{children}</label>
       &nbsp;
-      {/* B */}
       <input
         id={id}
         type={type}
@@ -259,6 +256,64 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, i
       </p>
     </div>)
 }
+*/
+
+/*----------Class component examples----------*/
+
+type App1Props = {
+  searchTerm: string;  
+}
+
+type App1State = {
+  searchTerm: string;
+}
+
+export class App1 extends React.Component<App1Props, App1State> {
+  constructor(props: App1Props) {
+    super(props);
+    this.state = {
+      searchTerm: 'React1',
+    };
+  }
+  render() {
+    const { searchTerm } = this.state;
+    return (
+      <div>
+        <h1>My Hacker Stories from Class compoent</h1>
+        <SearchForm
+          searchTerm={searchTerm}
+          onSearchInput={(event) => this.setState({ searchTerm: event.target.value })}
+        />
+      </div>
+    );
+  }
+}
+
+class InputWithLabel extends React.Component<InputWithLabelProps> {
+  render() {
+    const {
+      id,
+      value,
+      type = 'text',
+      onInputChange,
+      children,
+    } = this.props;
+    return (
+      <>
+        <label htmlFor={id}>{children}</label>
+        &nbsp;
+        <input
+          id={id}
+          type={type}
+          value={value}
+          onChange={onInputChange}
+        />
+      </>
+    );
+  }
+}
+
+/*----------End class component examples----------*/
 
 const List: React.FC<ListProps> = ({ list, onRemoveItem }) => {
 

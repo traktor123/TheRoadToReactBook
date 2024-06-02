@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
+import {App, App1}  from './App';
 import './index.css'
 
 const title = 'React';
@@ -12,5 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 )
 
 ReactDOM.createRoot(document.getElementById('root1')!).render(
-  <h1>{title}</h1>
+  <React.StrictMode>
+    <App1 searchTerm=''/>
+  </React.StrictMode>,
 )
