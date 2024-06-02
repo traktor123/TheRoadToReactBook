@@ -1,4 +1,5 @@
 import * as React from 'react';
+import axios from 'axios';
 
 /*Data Types*/
 
@@ -109,19 +110,24 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 /* functions */
 
-const getAsyncStories = (url: string = '') => {  
+const getAsyncStories = async (url: string = '') => {
   console.log(url);
-
+  let result = await axios.get(url)
+  return result.data.hits;
+    
+  /*
   return fetch(url) // B
     .then((response) => response.json())
-    .then(data => data.hits/*.map((hit: any) => ({
+    .then(data => data.hits.map((hit: any) => ({
       title: hit.title,
       url: hit.url,
       author: hit.author,
       num_comments: hit.num_comments,
       points: hit.points,
       objectID: hit.objectID,
-    }))*/) // C
+    })))
+  */
+
   /*
   return new Promise<{ data: { stories: Story[] } }>((resolve, reject) => {
     setTimeout(() => {
@@ -152,22 +158,22 @@ const App = () => {
   const [stories, dispatchStories] = React.useReducer(storiesReducer, { data: [], isLoading: false, isError: false });
   const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
 
-  const handleFetchStories = React.useCallback(() => {
+  const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
-    getAsyncStories(url)
-      .then(result => {
-        dispatchStories({
-          type: 'STORIES_FETCH_SUCCESS',
-          payload: result/*.data.stories*/, //D
-        });
-      })
-      .catch(error => {
-        dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
-      });
-  }
-  , [url]);
 
-  React.useEffect(handleFetchStories, [handleFetchStories]);
+    try {
+      const result = await getAsyncStories(url);
+      dispatchStories({
+        type: 'STORIES_FETCH_SUCCESS',
+        payload: result/*.data.stories*/, //D
+      });
+    }
+    catch (error) {
+      dispatchStories({ type: 'STORIES_FETCH_FAILURE' });
+    }
+  }, [url]);
+
+  React.useEffect(() => { handleFetchStories(); } , [handleFetchStories]);
 
   const handleRemoveStory = (item: Story) => {
     dispatchStories({
@@ -189,7 +195,7 @@ const App = () => {
 
   const handleSearchSubmit = () => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
-  };  
+  };
 
   const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -212,7 +218,7 @@ const App = () => {
         disabled={!searchTerm}
         onClick={handleSearchSubmit}>
         Submit
-      </button>      
+      </button>
       <hr />
       {stories.isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
       {
