@@ -261,7 +261,7 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({ value, onInputChange, i
 /*----------Class component examples----------*/
 
 type App1Props = {
-  searchTerm: string;  
+  searchTerm: string;
 }
 
 type App1State = {
@@ -290,6 +290,21 @@ export class App1 extends React.Component<App1Props, App1State> {
 }
 
 class InputWithLabel extends React.Component<InputWithLabelProps> {
+
+  private inputRef: React.RefObject<HTMLInputElement>;
+
+  constructor(props: InputWithLabelProps) {
+    super(props);
+    this.inputRef = React.createRef();
+  }
+
+  //Class component’s lifecycle method 
+  componentDidMount() {
+    if (this.props.isFocused) {
+      this.inputRef.current?.focus();
+    }
+  }
+
   render() {
     const {
       id,
@@ -303,6 +318,7 @@ class InputWithLabel extends React.Component<InputWithLabelProps> {
         <label htmlFor={id}>{children}</label>
         &nbsp;
         <input
+          ref={this.inputRef}
           id={id}
           type={type}
           value={value}
