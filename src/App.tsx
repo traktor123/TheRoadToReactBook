@@ -198,10 +198,10 @@ export const App = () => {
   };
 
   return (
-    <div>
-      <h1>My Hacker Stories</h1>
+    <div className="container">
+      <h1 className="headline-primary">My Hacker Stories</h1>
       <SearchForm onSearchSubmit={handleSearchSubmit} onSearchInput={handleSearchInput} searchTerm={searchTerm} />
-      <hr />
+      {/* <hr /> */}
       {stories.isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
       {
         stories.isLoading
@@ -219,16 +219,16 @@ type SearchFormProps = {
 }
 
 const SearchForm: React.FC<SearchFormProps> = ({ onSearchSubmit: onSearchSubmit, onSearchInput: onSearchInput, searchTerm }) => {
-
   return (
-    <form onSubmit={onSearchSubmit}>
+    <form onSubmit={onSearchSubmit} className="search-form">
       <InputWithLabel
         onInputChange={onSearchInput}
         value={searchTerm}
         id="search" isFocused={true}>
         <strong>Search:</strong>
       </InputWithLabel>
-      <button type="submit" disabled={!searchTerm}>Submit</button>
+      &nbsp;
+      <button type="submit" disabled={!searchTerm} className="button button_small">Submit</button>
     </form>)
 }
 
@@ -315,7 +315,7 @@ class InputWithLabel extends React.Component<InputWithLabelProps> {
     } = this.props;
     return (
       <>
-        <label htmlFor={id}>{children}</label>
+        <label htmlFor={id} className="label">{children}</label>
         &nbsp;
         <input
           ref={this.inputRef}
@@ -323,7 +323,7 @@ class InputWithLabel extends React.Component<InputWithLabelProps> {
           type={type}
           value={value}
           onChange={onInputChange}
-        />
+          className="input" />
       </>
     );
   }
@@ -348,18 +348,24 @@ const Item: React.FC<ItemProps> = ({
   item,
   onRemoveItem }) =>
 (
-  <li>
-    <span>
+  <li className="item">
+    <span style={{ width: '40%' }}>
       <a href={item.url}>{item.title}</a>
     </span>
     &nbsp;
-    <span>{item.author}</span>
+    <span style={{ width: '30%' }}>{item.author}</span>
     &nbsp;
-    <span>{item.num_comments}</span>
+    <span style={{ width: '10%' }}>{item.num_comments}</span>
     &nbsp;
-    <span>{item.points}</span>
+    <span style={{ width: '10%' }}>{item.points}</span>
     &nbsp;
-    <button type="button" onClick={onRemoveItem.bind(null, item)}>Remove</button>
+    <span style={{ width: '10%' }}>
+      <button className="button button_small"
+        type="button"
+        onClick={onRemoveItem.bind(null, item)}>
+        Remove
+      </button>
+    </span>
   </li>
 )
 
