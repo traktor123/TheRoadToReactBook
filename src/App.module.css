@@ -1,13 +1,12 @@
 .container {
     height: 100vw;
     padding: 20px;
-    background: #83a4d4;
-    /* fallback for old browsers */
+    background: #83a4d4; /* fallback for old browsers */
     background: linear-gradient(to left, #b6fbff, #83a4d4);
     color: #171212;
 }
 
-.headline-primary {
+.headlinePrimary {
     font-size: 48px;
     font-weight: 300;
     letter-spacing: 2px;
@@ -44,11 +43,11 @@
     color: #ffffff;
 }
 
-.button_small {
-    padding: 5px;
+.buttonSmall {
+    padding: 2px;
 }
 
-.button_large {
+.buttonLarge {
     padding: 10px;
 }
 

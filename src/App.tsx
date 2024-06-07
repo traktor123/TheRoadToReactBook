@@ -1,6 +1,10 @@
 import * as React from 'react';
 import axios from 'axios';
 
+import styles from './App.module.css';
+
+import clsx from 'clsx';
+
 /*Data Types*/
 
 type Story = {
@@ -198,8 +202,8 @@ export const App = () => {
   };
 
   return (
-    <div className="container">
-      <h1 className="headline-primary">My Hacker Stories</h1>
+    <div className={styles.container}>
+      <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
       <SearchForm onSearchSubmit={handleSearchSubmit} onSearchInput={handleSearchInput} searchTerm={searchTerm} />
       {/* <hr /> */}
       {stories.isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
@@ -220,7 +224,7 @@ type SearchFormProps = {
 
 const SearchForm: React.FC<SearchFormProps> = ({ onSearchSubmit: onSearchSubmit, onSearchInput: onSearchInput, searchTerm }) => {
   return (
-    <form onSubmit={onSearchSubmit} className="search-form">
+    <form onSubmit={onSearchSubmit} className={styles.searchForm}>
       <InputWithLabel
         onInputChange={onSearchInput}
         value={searchTerm}
@@ -228,7 +232,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchSubmit: onSearchSubmit,
         <strong>Search:</strong>
       </InputWithLabel>
       &nbsp;
-      <button type="submit" disabled={!searchTerm} className="button button_small">Submit</button>
+      <button type="submit" disabled={!searchTerm} className={`${styles.button} ${styles.buttonSmall}`}>Submit</button>
     </form>)
 }
 
@@ -315,7 +319,7 @@ class InputWithLabel extends React.Component<InputWithLabelProps> {
     } = this.props;
     return (
       <>
-        <label htmlFor={id} className="label">{children}</label>
+        <label htmlFor={id} className={styles.label}>{children}</label>
         &nbsp;
         <input
           ref={this.inputRef}
@@ -323,7 +327,7 @@ class InputWithLabel extends React.Component<InputWithLabelProps> {
           type={type}
           value={value}
           onChange={onInputChange}
-          className="input" />
+          className={styles.input} />
       </>
     );
   }
@@ -344,11 +348,13 @@ const List: React.FC<ListProps> = ({ list, onRemoveItem }) => {
   </ul>
 };
 
+const isSmall: boolean = true;
+
 const Item: React.FC<ItemProps> = ({
   item,
   onRemoveItem }) =>
 (
-  <li className="item">
+  <li className={styles.item}>
     <span style={{ width: '40%' }}>
       <a href={item.url}>{item.title}</a>
     </span>
@@ -360,7 +366,7 @@ const Item: React.FC<ItemProps> = ({
     <span style={{ width: '10%' }}>{item.points}</span>
     &nbsp;
     <span style={{ width: '10%' }}>
-      <button className="button button_small"
+      <button className={clsx(styles.button, {[styles.buttonSmall]: isSmall})}
         type="button"
         onClick={onRemoveItem.bind(null, item)}>
         Remove
