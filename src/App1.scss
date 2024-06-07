@@ -1,0 +1,10 @@
+.button1 {
+    background-color: burlywood;    
+}
+
+.smallButton1 {
+    @extend .button1;
+    border: 1;
+    border-color: black;
+    padding: 0;
+}

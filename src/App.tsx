@@ -2,6 +2,8 @@ import * as React from 'react';
 import axios from 'axios';
 
 import styles from './App.module.css';
+import './App1.scss';
+import './App2.css';
 
 import clsx from 'clsx';
 
@@ -304,9 +306,11 @@ class InputWithLabel extends React.Component<InputWithLabelProps> {
 
   //Class component’s lifecycle method 
   componentDidMount() {
+    /*
     if (this.props.isFocused) {
       this.inputRef.current?.focus();
     }
+    */
   }
 
   render() {
@@ -366,7 +370,8 @@ const Item: React.FC<ItemProps> = ({
     <span style={{ width: '10%' }}>{item.points}</span>
     &nbsp;
     <span style={{ width: '10%' }}>
-      <button className={clsx(styles.button, {[styles.buttonSmall]: isSmall})}
+      {/* <button className={clsx(styles.button, {[styles.buttonSmall]: isSmall})} */}
+      <button className="smallButton1"
         type="button"
         onClick={onRemoveItem.bind(null, item)}>
         Remove
