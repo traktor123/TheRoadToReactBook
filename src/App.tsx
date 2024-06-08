@@ -8,6 +8,10 @@ import clsx from 'clsx';
 
 import styled from 'styled-components';
 
+import { ReactComponent as Check } from './assets/check.svg';
+
+import { FaBeer, FaApple, FaFacebook } from "react-icons/fa";
+
 /*CSS in JS Styled Components*/
 const StyledContainer = styled.div`
 height: 100vw;
@@ -259,7 +263,10 @@ export const App = () => {
     }
   }, [url]);
 
-  React.useEffect(() => { handleFetchStories(); }, [handleFetchStories]);
+  React.useEffect(() => {
+    console.log('How many times do I log?');
+    handleFetchStories();
+  }, [handleFetchStories]);
 
   const handleRemoveStory = (item: Story) => {
     dispatchStories({
@@ -287,6 +294,7 @@ export const App = () => {
   return (
     // <div className={styles.container}>
     <StyledContainer>
+      Icons from react-icons/fa:<span><FaBeer/><FaApple/><FaFacebook/></span>
       {/* <h1 className={styles.headlinePrimary}>My Hacker Stories</h1> */}
       <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
       <SearchForm onSearchSubmit={handleSearchSubmit} onSearchInput={handleSearchInput} searchTerm={searchTerm} />
@@ -455,10 +463,10 @@ const Item: React.FC<ItemProps> = ({
     <StyledColumn width="10%">{item.points}</StyledColumn>
     &nbsp;
     <StyledColumn width="10%">
-      <button className={clsx(styles.button, { [styles.buttonSmall]: isSmall })}
+      <button className={clsx(styles.button, { [styles.buttonSmall]: isSmall })}      
         type="button"
         onClick={onRemoveItem.bind(null, item)}>
-        Remove
+        <Check height="18px" width="18px" />
       </button>
     </StyledColumn>
   </StyledItem>
