@@ -232,11 +232,18 @@ const getAsyncStories = async (url: string = '') => {
 const useStorageState = (key: string, initialState: string): [string, (initialState: string) => void] =>
 //[string, React.Dispatch<React.SetStateAction<string>>]   
 {
+  const isMounted = React.useRef(false);
+
   const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
 
   React.useEffect(() => {
-    console.log('A');
-    localStorage.setItem(key, value);
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else 
+    {    
+      console.log('A');
+      localStorage.setItem(key, value);
+    }
   }, [value, key]);
 
   return [value, setValue];
