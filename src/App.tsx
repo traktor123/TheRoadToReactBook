@@ -235,6 +235,7 @@ const useStorageState = (key: string, initialState: string): [string, (initialSt
   const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
 
   React.useEffect(() => {
+    console.log('A');
     localStorage.setItem(key, value);
   }, [value, key]);
 
