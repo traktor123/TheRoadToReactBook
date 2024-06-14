@@ -143,6 +143,10 @@ type StoriesFetchInit = {
   type: 'STORIES_FETCH_INIT';
 }
 
+type StoriesFetchInit1 = {
+  type: 'STORIES_FETCH_INIT1';
+}
+
 type StoriesFetchSuccessAction = {
   type: 'STORIES_FETCH_SUCCESS';
   payload: Story[];
@@ -157,7 +161,7 @@ type StoriesRemoveAction = {
   payload: Story;
 };
 
-type StoriesAction = StoriesFetchInit | StoriesFetchSuccessAction | StoriesFetchFailureAction | StoriesRemoveAction;
+type StoriesAction = StoriesFetchInit | StoriesFetchSuccessAction | StoriesFetchFailureAction | StoriesRemoveAction | StoriesFetchInit1;
 
 const storiesReducer = (
   state: StoriesState,
@@ -168,6 +172,12 @@ const storiesReducer = (
       return {
         ...state,
         isLoading: true,
+        isError: false,
+      };
+    case 'STORIES_FETCH_INIT1':
+      return {
+        ...state,
+        isLoading: false,
         isError: false,
       };
     case 'STORIES_FETCH_SUCCESS':
@@ -239,8 +249,7 @@ const useStorageState = (key: string, initialState: string): [string, (initialSt
   React.useEffect(() => {
     if (!isMounted.current) {
       isMounted.current = true;
-    } else 
-    {    
+    } else {
       console.log('A');
       localStorage.setItem(key, value);
     }
@@ -258,7 +267,8 @@ export const App = () => {
 
   const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
-
+    dispatchStories({ type: 'STORIES_FETCH_INIT1' });
+    dispatchStories({ type: 'STORIES_FETCH_INIT' });
     try {
       const result = await getAsyncStories(url);
       dispatchStories({
@@ -276,12 +286,12 @@ export const App = () => {
     handleFetchStories();
   }, [handleFetchStories]);
 
-  const handleRemoveStory = (item: Story) => {
+  const handleRemoveStory = React.useCallback((item: Story) => {
     dispatchStories({
       type: 'REMOVE_STORY',
       payload: item,
     });
-  };
+  },[]);
 
   /*
   let searchedStories = searchTerm === ''
@@ -299,10 +309,11 @@ export const App = () => {
     event.preventDefault();
   };
 
+  console.log('B:App');
   return (
     // <div className={styles.container}>
     <StyledContainer>
-      Icons from react-icons/fa:<span><FaBeer/><FaApple/><FaFacebook/></span>
+      Icons from react-icons/fa:<span><FaBeer /><FaApple /><FaFacebook /></span>
       {/* <h1 className={styles.headlinePrimary}>My Hacker Stories</h1> */}
       <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
       <SearchForm onSearchSubmit={handleSearchSubmit} onSearchInput={handleSearchInput} searchTerm={searchTerm} />
@@ -432,7 +443,7 @@ class InputWithLabel extends React.Component<InputWithLabelProps> {
           id={id}
           type={type}
           value={value}
-          onChange={onInputChange}/>
+          onChange={onInputChange} />
       </>
     );
   }
@@ -440,8 +451,8 @@ class InputWithLabel extends React.Component<InputWithLabelProps> {
 
 /*----------End class component examples----------*/
 
-const List: React.FC<ListProps> = ({ list, onRemoveItem }) => {
-
+const List: React.FC<ListProps> = React.memo(({ list, onRemoveItem }) => {
+  console.log('B:List');
   return <ul>
     {
       list.map((item) => (
@@ -451,7 +462,7 @@ const List: React.FC<ListProps> = ({ list, onRemoveItem }) => {
       ))
     }
   </ul>
-};
+});
 
 const isSmall: boolean = true;
 
@@ -471,7 +482,7 @@ const Item: React.FC<ItemProps> = ({
     <StyledColumn width="10%">{item.points}</StyledColumn>
     &nbsp;
     <StyledColumn width="10%">
-      <button className={clsx(styles.button, { [styles.buttonSmall]: isSmall })}      
+      <button className={clsx(styles.button, { [styles.buttonSmall]: isSmall })}
         type="button"
         onClick={onRemoveItem.bind(null, item)}>
         <Check height="18px" width="18px" />
