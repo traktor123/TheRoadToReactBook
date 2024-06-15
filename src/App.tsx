@@ -260,6 +260,14 @@ const useStorageState = (key: string, initialState: string): [string, (initialSt
 
 /* Components */
 
+const getSumComments = (stories: { data: Story[] }) => {
+  console.log('C');
+  return stories.data.reduce(
+    (result, value) => result + value.num_comments,
+    0
+  );
+};
+
 export const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
   const [stories, dispatchStories] = React.useReducer(storiesReducer, { data: [], isLoading: false, isError: false });
@@ -291,7 +299,7 @@ export const App = () => {
       type: 'REMOVE_STORY',
       payload: item,
     });
-  },[]);
+  }, []);
 
   /*
   let searchedStories = searchTerm === ''
@@ -310,12 +318,20 @@ export const App = () => {
   };
 
   console.log('B:App');
+
+  //const sumComments = getSumComments(stories);
+  const sumComments = React.useMemo(
+    () => getSumComments(stories),
+    [stories]
+  );  
+
   return (
     // <div className={styles.container}>
     <StyledContainer>
       Icons from react-icons/fa:<span><FaBeer /><FaApple /><FaFacebook /></span>
       {/* <h1 className={styles.headlinePrimary}>My Hacker Stories</h1> */}
-      <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
+      {/* <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary> */}
+      <h1>My Hacker Stories with {sumComments} comments.</h1>
       <SearchForm onSearchSubmit={handleSearchSubmit} onSearchInput={handleSearchInput} searchTerm={searchTerm} />
       {/* <hr /> */}
       {stories.isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
