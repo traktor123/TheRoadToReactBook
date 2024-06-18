@@ -179,7 +179,7 @@ type StoriesAction = StoriesFetchInit | StoriesFetchSuccessAction | StoriesFetch
 const storiesReducer = (
   state: StoriesState,
   action: StoriesAction
-) => {
+): StoriesState => {
   switch (action.type) {
     case 'STORIES_FETCH_INIT':
       return {
@@ -514,3 +514,5 @@ const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) =>
 )
 
 export default App;
+
+export { storiesReducer, SearchForm, InputWithLabel, List, Item, StoriesAction };
