@@ -132,6 +132,12 @@ type InputWithLabelProps = {
   isFocused?: boolean;
 };
 
+type SearchFormProps = {
+  onSearchSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;
+  onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  searchTerm: string;
+}
+
 /*Reducers*/
 type StoriesState = {
   data: Story[],
@@ -160,6 +166,13 @@ type StoriesRemoveAction = {
   type: 'REMOVE_STORY';
   payload: Story;
 };
+
+/*
+type StoriesAction = {
+  type: string;
+  payload: any;
+};
+*/
 
 type StoriesAction = StoriesFetchInit | StoriesFetchSuccessAction | StoriesFetchFailureAction | StoriesRemoveAction | StoriesFetchInit1;
 
@@ -239,10 +252,10 @@ const getAsyncStories = async (url: string = '') => {
   */
 }
 
-const useStorageState = (key: string, initialState: string): [string, (initialState: string) => void] =>
+const useStorageState = (key: string, initialState: string): [string, (newValue: string) => void] =>
 //[string, React.Dispatch<React.SetStateAction<string>>]   
 {
-  const isMounted = React.useRef(false);
+  const isMounted = React.useRef<boolean>(false);
 
   const [value, setValue] = React.useState(localStorage.getItem(key) || initialState);
 
@@ -323,7 +336,7 @@ export const App = () => {
   const sumComments = React.useMemo(
     () => getSumComments(stories),
     [stories]
-  );  
+  );
 
   return (
     // <div className={styles.container}>
@@ -344,12 +357,6 @@ export const App = () => {
     </StyledContainer>
   );
 };
-
-type SearchFormProps = {
-  onSearchSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;
-  onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  searchTerm: string;
-}
 
 const SearchForm: React.FC<SearchFormProps> = ({ onSearchSubmit: onSearchSubmit, onSearchInput: onSearchInput, searchTerm }) => {
   return (
@@ -482,9 +489,8 @@ const List: React.FC<ListProps> = React.memo(({ list, onRemoveItem }) => {
 
 const isSmall: boolean = true;
 
-const Item: React.FC<ItemProps> = ({
-  item,
-  onRemoveItem }) =>
+const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) =>
+//const Item = ({ item, onRemoveItem }: ItemProps): JSX.Element => 
 (
   <StyledItem>
     <StyledColumn width="40%">
