@@ -120,7 +120,7 @@ type ItemProps = {
   objectID: number,
   */
   item: Story;
-  onRemoveItem: (item: Story) => void;
+  onRemoveItem?: (item: Story) => void;
 }
 
 type InputWithLabelProps = {
@@ -506,8 +506,9 @@ const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) =>
     <StyledColumn width="10%">
       <button className={clsx(styles.button, { [styles.buttonSmall]: isSmall })}
         type="button"
-        onClick={onRemoveItem.bind(null, item)}>
+        onClick={() => onRemoveItem(item) }>
         <Check height="18px" width="18px" />
+        {/* onClick={onRemoveItem.bind(null, item)}> */}
       </button>
     </StyledColumn>
   </StyledItem>
@@ -515,4 +516,4 @@ const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) =>
 
 export default App;
 
-export { storiesReducer, SearchForm, InputWithLabel, List, Item, StoriesAction };
+export { storiesReducer, SearchForm, InputWithLabel, List, Item, StoriesAction, ItemProps, Story, SearchFormProps };
