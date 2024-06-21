@@ -120,7 +120,7 @@ type ItemProps = {
   objectID: number,
   */
   item: Story;
-  onRemoveItem?: (item: Story) => void;
+  onRemoveItem: (item: Story) => void;
 }
 
 type InputWithLabelProps = {
@@ -508,6 +508,7 @@ const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) =>
         type="button"
         onClick={() => onRemoveItem(item) }>
         <Check height="18px" width="18px" />
+        Dismiss
         {/* onClick={onRemoveItem.bind(null, item)}> */}
       </button>
     </StyledColumn>
