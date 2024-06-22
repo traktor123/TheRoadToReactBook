@@ -365,7 +365,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearchSubmit: onSearchSubmit,
         onInputChange={onSearchInput}
         value={searchTerm}
         id="search" isFocused={true}>
-        <strong>Search:</strong>
+        <strong><strong>Search:</strong></strong>
       </InputWithLabel>
       &nbsp;
       {/* <button type="submit" disabled={!searchTerm} className={`${styles.button} ${styles.buttonSmall}`}>Submit</button> */}

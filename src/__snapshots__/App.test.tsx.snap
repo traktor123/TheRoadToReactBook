@@ -1,0 +1,32 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Item > renders snapshot 1`] = `
+<form
+  class="sc-kAycRU DMOuB"
+>
+  <label
+    class="sc-imWZod kRtAqO"
+    for="search"
+  >
+    <strong>
+      <strong>
+        Search:
+      </strong>
+    </strong>
+  </label>
+   
+  <input
+    class="sc-jXbVAB kTmaiu"
+    id="search"
+    type="text"
+    value="React"
+  />
+   
+  <button
+    class="sc-dcJtft sc-gsFSjX gQElQm fhFcgD"
+    type="submit"
+  >
+    Submit
+  </button>
+</form>
+`;

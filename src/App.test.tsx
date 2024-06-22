@@ -4,7 +4,8 @@ import App, {
     storiesReducer,
     Item,
     SearchForm,
-    StoriesAction
+    StoriesAction,
+    SearchFormProps
 } from './App';
 
 import {
@@ -132,13 +133,13 @@ describe('Item', () => {
                 data: {
                     hits: stories,
                 },
-            });            
+            });
             (axios.get as jest.Mock).mockImplementationOnce(() => promise);
             render(<App />);
             screen.debug();
             expect(screen.queryByText(/Loading/)).toBeInTheDocument();
             await waitFor(async () => {
-                await promise;            
+                await promise;
                 screen.debug();
                 expect(screen.queryByText(/Loading/)).toBeNull();
                 expect(screen.getByText('React')).toBeInTheDocument();
@@ -169,7 +170,7 @@ describe('Item', () => {
                 hits: stories,
             },
         });
-        axios.get.mockImplementationOnce(() => promise);
+        (axios.get as jest.Mock).mockImplementationOnce(() => promise);
         render(<App />);
         await waitFor(async () => await promise);
         await promise; //That should not be here
@@ -199,7 +200,7 @@ describe('Item', () => {
                 hits: [anotherStory],
             },
         });
-        axios.get.mockImplementation((url: string) => {
+        (axios.get as jest.Mock).mockImplementation((url: string) => {
             if (url.includes('React')) {
                 return reactPromise;
             }
@@ -239,5 +240,16 @@ describe('Item', () => {
         expect(screen.queryByText('Jordan Walke')).toBeNull();
         expect(screen.queryByText('Dan Abramov, Andrew Clark')).toBeNull();
         expect(screen.queryByText('Brendan Eich')).toBeInTheDocument();
+    });
+
+    it('renders snapshot', () => {
+        const searchFormProps: SearchFormProps = {
+            onSearchSubmit: () => {},
+            onSearchInput: () => {},
+            searchTerm: "React"
+        }
+
+        const { container } = render(<SearchForm {...searchFormProps} />);
+        expect(container.firstChild).toMatchSnapshot();
     });
 });
