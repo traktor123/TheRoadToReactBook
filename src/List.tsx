@@ -8,12 +8,14 @@ import {
     StyledColumn,
 } from './StyledComponents';
 
+import { Story } from './Data';
+
+import { sortBy } from 'lodash';
+
 export type ListProps = {
     list: Story[];
     onRemoveItem: (item: Story) => void;
 };
-
-import { Story } from './Data';
 
 export type ItemProps = {
     /*
@@ -28,11 +30,54 @@ export type ItemProps = {
     onRemoveItem: (item: Story) => void;
 }
 
+type SortFunction = (list: Story[]) => Story[];
+
+const SORTS: Record<string, SortFunction> = {
+    NONE: (list: Story[]) => list,
+    TITLE: (list: Story[]) => sortBy(list, 'title'),
+    AUTHOR: (list: Story[]) => sortBy(list, 'author'),
+    COMMENT: (list: Story[]) => sortBy(list, 'num_comments').reverse(),
+    POINT: (list: Story[]) => sortBy(list, 'points').reverse(),
+};
+
 export const List: React.FC<ListProps> = React.memo(({ list, onRemoveItem }) => {
     console.log('B:List');
+
+    const [sort, setSort] = React.useState('NONE');
+
+    const handleSort = (sortKey: string) => {
+        setSort(sortKey);
+    };
+
+    const sortFunction = SORTS[sort];
+    const sortedList = sortFunction(list);
+
     return <ul>
+        <li style={{ display: 'flex' }}>
+            <span style={{ width: '40%' }}>
+                <button type="button" onClick={() => handleSort('TITLE')} style={{backgroundColor: sort == "TITLE" ? 'green' : 'inherit'}}>
+                    Title
+                </button>
+            </span>
+            <span style={{ width: '30%' }}>
+                <button type="button" onClick={() => handleSort('AUTHOR')} style={{backgroundColor: sort == "AUTHOR" ? 'green' : 'inherit'}}>
+                    Author
+                </button>
+            </span>
+            <span style={{ width: '10%' }}>
+                <button type="button" onClick={() => handleSort('COMMENT')} style={{backgroundColor: sort == "COMMENT" ? 'green' : 'inherit'}}>
+                    Comments
+                </button>
+            </span>
+            <span style={{ width: '10%' }}>
+                <button type="button" onClick={() => handleSort('POINT')} style={{backgroundColor: sort == "POINT" ? 'green' : 'inherit'}}>
+                    Points
+                </button>
+            </span>
+            <span style={{ width: '10%' }}>Actions</span>
+        </li>
         {
-            list.map((item) => (
+            sortedList.map((item) => (
                 <div key={item.objectID}>
                     <Item item={item} onRemoveItem={onRemoveItem} />
                 </div>
