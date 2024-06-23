@@ -111,9 +111,10 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 /* functions */
 
-const getAsyncStories = async (url: string = '') => {
-  console.log(url);
-  let result = await axios.get(url)
+const getAsyncStories = async (urls: string[]) => {
+  const lastUrl = urls == null ? '' : urls[urls.length - 1];
+  const result = await axios.get(lastUrl);
+
   return result.data.hits;
 
   /*
@@ -169,17 +170,39 @@ const getSumComments = (stories: { data: Story[] }) => {
   );
 };
 
+const extractSearchTerm = (url: string): string => url.replace(API_ENDPOINT, '');
+
+const getLastSearches = (urls: string[]): string[] =>
+  urls
+    .reduce((result, url, index) => {
+      const searchTerm = extractSearchTerm(url);
+      if (index === 0) {
+        return result.concat(searchTerm);
+      }
+      const previousSearchTerm = result[result.length - 1];
+      if (searchTerm === previousSearchTerm) {
+        return result;
+      } else {
+        return result.concat(searchTerm);
+      }
+    }, [])
+    .slice(-6)
+    .slice(0, -1)
+    .map(extractSearchTerm);
+
+const getUrl = (searchTerm: string) => `${API_ENDPOINT}${searchTerm}`;
+
 export const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('searchTerm', 'React');
   const [stories, dispatchStories] = React.useReducer(storiesReducer, { data: [], isLoading: false, isError: false });
-  const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
+  const [urls, setUrls] = React.useState([getUrl(searchTerm)]);
 
   const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
     dispatchStories({ type: 'STORIES_FETCH_INIT1' });
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
     try {
-      const result = await getAsyncStories(url);
+      const result = await getAsyncStories(urls);
       dispatchStories({
         type: 'STORIES_FETCH_SUCCESS',
         payload: result/*.data.stories*/, //D
@@ -188,7 +211,7 @@ export const App = () => {
     catch (error) {
       dispatchStories({ type: 'STORIES_FETCH_FAILURE' });
     }
-  }, [url]);
+  }, [urls]);
 
   React.useEffect(() => {
     console.log('How many times do I log?');
@@ -213,18 +236,27 @@ export const App = () => {
     setSearchTerm(event.target.value);
   };
 
+  const handleSearch = (searchTerm: string) => {
+    const url = getUrl(searchTerm);
+    setUrls(urls.concat(url));
+  };
+
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`);
+    handleSearch(searchTerm);
     event.preventDefault();
   };
 
-  console.log('B:App');
+  const handleLastSearch = (searchTerm: string) => {
+    handleSearch(searchTerm);
+    setSearchTerm(searchTerm);
+  };
 
-  //const sumComments = getSumComments(stories);
   const sumComments = React.useMemo(
     () => getSumComments(stories),
     [stories]
   );
+
+  const lastSearches = getLastSearches(urls);
 
   return (
     // <div className={styles.container}>
@@ -234,6 +266,7 @@ export const App = () => {
       {/* <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary> */}
       <h1>My Hacker Stories with {sumComments} comments.</h1>
       <SearchForm onSearchSubmit={handleSearchSubmit} onSearchInput={handleSearchInput} searchTerm={searchTerm} />
+      <LastSearches lastSearches={lastSearches} onLastSearch={handleLastSearch}/>
       {/* <hr /> */}
       {stories.isError && <p style={{ color: 'red' }}>Something went wrong ...</p>}
       {
@@ -278,6 +311,25 @@ export class App1 extends React.Component<App1Props, App1State> {
 }
 
 /*----------End class component examples----------*/
+
+type LastSearchesProps = {
+  lastSearches: string[],
+  onLastSearch: (searchTerm: string) => void
+}
+
+const LastSearches: React.FC<LastSearchesProps> = ({ lastSearches, onLastSearch }) => (
+  <>
+    {lastSearches.map((searchTerm, index) => (
+      <button
+        key={searchTerm + index}
+        type="button"
+        onClick={() => onLastSearch(searchTerm)}
+      >
+        {searchTerm}
+      </button>
+    ))}
+  </>
+);
 
 
 export default App;
