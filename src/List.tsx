@@ -43,34 +43,40 @@ const SORTS: Record<string, SortFunction> = {
 export const List: React.FC<ListProps> = React.memo(({ list, onRemoveItem }) => {
     console.log('B:List');
 
-    const [sort, setSort] = React.useState('NONE');
+    const [sort, setSort] = React.useState({
+        sortKey: 'NONE',
+        isReverse: false,
+    });
 
     const handleSort = (sortKey: string) => {
-        setSort(sortKey);
+        const isReverse = sort.sortKey === sortKey && !sort.isReverse;
+        setSort({ sortKey: sortKey, isReverse: isReverse });
     };
 
-    const sortFunction = SORTS[sort];
-    const sortedList = sortFunction(list);
+    const sortFunction = SORTS[sort.sortKey];
+    const sortedList = sort.isReverse
+        ? sortFunction(list).reverse()
+        : sortFunction(list);
 
     return <ul>
         <li style={{ display: 'flex' }}>
             <span style={{ width: '40%' }}>
-                <button type="button" onClick={() => handleSort('TITLE')} style={{backgroundColor: sort == "TITLE" ? 'green' : 'inherit'}}>
+                <button type="button" onClick={() => handleSort('TITLE')} style={{ backgroundColor: sort.sortKey == "TITLE" ? 'green' : 'inherit' }}>
                     Title
                 </button>
             </span>
             <span style={{ width: '30%' }}>
-                <button type="button" onClick={() => handleSort('AUTHOR')} style={{backgroundColor: sort == "AUTHOR" ? 'green' : 'inherit'}}>
+                <button type="button" onClick={() => handleSort('AUTHOR')} style={{ backgroundColor: sort.sortKey == "AUTHOR" ? 'green' : 'inherit' }}>
                     Author
                 </button>
             </span>
             <span style={{ width: '10%' }}>
-                <button type="button" onClick={() => handleSort('COMMENT')} style={{backgroundColor: sort == "COMMENT" ? 'green' : 'inherit'}}>
+                <button type="button" onClick={() => handleSort('COMMENT')} style={{ backgroundColor: sort.sortKey == "COMMENT" ? 'green' : 'inherit' }}>
                     Comments
                 </button>
             </span>
             <span style={{ width: '10%' }}>
-                <button type="button" onClick={() => handleSort('POINT')} style={{backgroundColor: sort == "POINT" ? 'green' : 'inherit'}}>
+                <button type="button" onClick={() => handleSort('POINT')} style={{ backgroundColor: sort.sortKey == "POINT" ? 'green' : 'inherit' }}>
                     Points
                 </button>
             </span>
