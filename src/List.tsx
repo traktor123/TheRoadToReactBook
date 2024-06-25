@@ -27,7 +27,7 @@ export type ItemProps = {
     objectID: number,
     */
     item: Story;
-    onRemoveItem: (item: Story) => void;
+    onRemoveItem: ((item: Story) => void);
 }
 
 type SortFunction = (list: Story[]) => Story[];

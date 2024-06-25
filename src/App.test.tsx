@@ -2,11 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 
 import App, {
     storiesReducer,
-    Item,
-    SearchForm,
-    StoriesAction,
-    SearchFormProps
+    StoriesAction
 } from './App';
+
+import { Item } from './List';
+
+import { SearchForm, SearchFormProps } from './SearchForm'
 
 import {
     render,
@@ -62,7 +63,7 @@ const stories = [storyOne, storyTwo];
 describe('storiesReducer', () => {
     it('removes a story from all stories', () => {
         let action: StoriesAction = { type: "REMOVE_STORY", payload: storyTwo };
-        let state = { data: stories, isLoading: false, isError: false }
+        let state = { data: stories, isLoading: false, isError: false, page: 0 }
 
         let newState = storiesReducer(state, action);
 
@@ -78,7 +79,7 @@ describe('storiesReducer', () => {
 
 describe('Item', () => {
     it('renders all properties', () => {
-        render(<Item item={storyOne} />);
+        render(<Item item={storyOne} onRemoveItem={() => {}}/>);
         //screen.debug();
         expect(screen.getByText('Jordan Walke')).toBeInTheDocument();
         expect(screen.getByText('React')).toHaveAttribute(
@@ -88,7 +89,7 @@ describe('Item', () => {
     });
 
     it('renders a clickable dismiss button', () => {
-        render(<Item item={storyOne} />);
+        render(<Item item={storyOne} onRemoveItem={() => {}}/>);
         //screen.getByRole('');
         expect(screen.getByRole('button')).toBeInTheDocument();
     });
@@ -225,7 +226,7 @@ describe('Item', () => {
         expect(screen.queryByText('Brendan Eich')).toBeNull();
 
         // User Interaction -> Search
-        fireEvent.change(screen.queryByDisplayValue('React'), {
+        fireEvent.change(screen.queryByDisplayValue('React') as HTMLElement, {
             target: {
                 value: 'JavaScript',
             },
@@ -233,7 +234,7 @@ describe('Item', () => {
         expect(screen.queryByDisplayValue('React')).toBeNull();
         expect(screen.queryByDisplayValue('JavaScript')).toBeInTheDocument();
 
-        fireEvent.submit(screen.queryByText('Submit'));
+        fireEvent.submit(screen.queryByText('Submit') as HTMLElement);
         // Second Data Fetching
         await waitFor(async () => await javascriptPromise);
         await javascriptPromise; //That should not be here

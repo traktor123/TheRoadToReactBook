@@ -27,7 +27,7 @@ import { SearchForm } from './SearchForm';
 
 
 /*Reducers*/
-type StoriesState = {
+export type StoriesState = {
   data: Story[],
   isLoading: boolean;
   isError: boolean;
@@ -195,21 +195,19 @@ const getLastSearches = (urls: string[]): string[] => {
       .reduce((result, url, index) => {
         const searchTerm = extractSearchTerm(url);
         if (index === 0) {
-          return result.concat(searchTerm);
+          return result.concat(searchTerm as never);
         }
         const previousSearchTerm = result[result.length - 1];
         if (searchTerm === previousSearchTerm) {
           return result;
         } else {
-          return result.concat(searchTerm);
+          return result.concat(searchTerm as never);
         }
       }, []);
 
   result = result.slice(-6);
 
   result = result.slice(0, -1);
-
-  //let result1 = result.map((url) => extractSearchTerm(url));
 
   return result;
 }
@@ -368,4 +366,6 @@ const LastSearches: React.FC<LastSearchesProps> = ({ lastSearches, onLastSearch 
 
 export default App;
 
-export { storiesReducer, StoriesAction };
+export { storiesReducer };
+
+export type {StoriesAction };
