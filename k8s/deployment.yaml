@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: the-road-to-react-book
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: the-road-to-react-book
+  template:
+    metadata:
+      labels:
+        app: the-road-to-react-book
+    spec:
+      containers:
+      - name: the-road-to-react-book
+        image: traktor123/the-road-to-react-book:latest
+        ports:
+        - containerPort: 5000
